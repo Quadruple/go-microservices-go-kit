@@ -11,6 +11,7 @@ type MatrixHolder struct {
 type MatrixOperations interface {
 	ConvertSliceToMatrix([][]float64) *MatrixHolder
 	CalculateDeterminant() float64
+	CalculateEigenValues() []float64
 }
 
 func ConvertSliceToMatrix(data [][]float64) *MatrixHolder {
@@ -26,6 +27,10 @@ func ConvertSliceToMatrix(data [][]float64) *MatrixHolder {
 
 func (matrixHolder *MatrixHolder) CalculateDeterminant() float64 {
 	return mat.Det(matrixHolder.Matrix)
+}
+
+func (matrixHolder *MatrixHolder) CalculateEigenValues() []float64 {
+	return []float64{1, 2, 3, 4}
 }
 
 func getDimensions(data [][]float64) (int, int) {
