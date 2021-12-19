@@ -10,10 +10,13 @@ import (
 )
 
 func main() {
-	logger := log.NewLogfmtLogger(os.Stderr)
+	var logger log.Logger
+	logger = log.NewLogfmtLogger(os.Stderr)
+	logger = log.With(logger, "ts", log.DefaultTimestampUTC)
 
 	var svc determinant.DeterminantService
 	svc = determinant.NewService()
+	svc = determinant.NewLoggingService(log.With(logger, "Component:", "Determinant"), svc)
 
 	determinantHandler := httptransport.NewServer(
 		determinant.MakeUppercaseEndpoint(svc),
