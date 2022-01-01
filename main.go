@@ -3,6 +3,7 @@ package main
 import (
 	"go-microservices/determinant"
 	"go-microservices/eigen"
+	"go-microservices/inverse"
 	"net/http"
 	"os"
 
@@ -23,6 +24,10 @@ func main() {
 	eigenValueService = eigen.NewService()
 	eigenValueService = eigen.NewLoggingService(log.With(logger, "Component:", "EigenValue"), eigenValueService)
 
+	var inverseService inverse.InverseService
+	inverseService = inverse.NewService()
+	inverseService = inverse.NewLoggingService(log.With(logger, "Component:", "Inverse Operation"), inverseService)
+
 	determinantHandler := httptransport.NewServer(
 		determinant.MakeUppercaseEndpoint(determinantService),
 		determinant.DecodeDeterminantRequest,
@@ -35,8 +40,15 @@ func main() {
 		eigen.EncodeEigenValueResponse,
 	)
 
+	inverseHandler := httptransport.NewServer(
+		inverse.MakeInverseEndpoint(inverseService),
+		inverse.DecodeInverseRequest,
+		inverse.EncodeInverseResponse,
+	)
+
 	http.Handle("/determinant", determinantHandler)
 	http.Handle("/eigen", eigenValueHandler)
+	http.Handle("/inverse", inverseHandler)
 	logger.Log("msg", "HTTP", "addr", ":8080")
 	logger.Log("err", http.ListenAndServe(":8080", nil))
 }
