@@ -16,7 +16,7 @@ func NewLoggingService(logger log.Logger, invService InverseService) InverseServ
 	return &loggingService{logger, invService}
 }
 
-func (logService *loggingService) GetInverse(matrixHolder *matrix.MatrixHolder) (_ float64, err error) {
+func (logService *loggingService) GetInverse(matrixHolder *matrix.MatrixHolder) (_ [][]float64, err error) {
 	defer func(begin time.Time) {
 		logService.logger.Log(
 			"Method", "GetInverse",

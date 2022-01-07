@@ -12,8 +12,8 @@ type inverseRequest struct {
 }
 
 type inverseResponse struct {
-	InvertedMatrix float64 `json:"invertedMatrix"`
-	Err            string  `json:"err,omitempty"`
+	InvertedMatrix [][]float64 `json:"invertedMatrix"`
+	Err            string      `json:"err,omitempty"`
 }
 
 func MakeInverseEndpoint(svc InverseService) endpoint.Endpoint {
