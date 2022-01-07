@@ -11,7 +11,7 @@ type MatrixHolder struct {
 type MatrixOperations interface {
 	ConvertSliceToMatrix([][]float64) *MatrixHolder
 	CalculateDeterminant() float64
-	CalculateEigenValues() []float64
+	CalculateEigenValues() ([]complex128, error)
 	GetInverse() [][]float64
 }
 
@@ -30,8 +30,13 @@ func (matrixHolder *MatrixHolder) CalculateDeterminant() float64 {
 	return mat.Det(matrixHolder.Matrix)
 }
 
-func (matrixHolder *MatrixHolder) CalculateEigenValues() []float64 {
-	return []float64{1, 2, 3, 4}
+func (matrixHolder *MatrixHolder) CalculateEigenValues() ([][]float64, bool) {
+	var eigenValues mat.Eigen
+	err := eigenValues.Factorize(matrixHolder.Matrix, mat.EigenNone)
+	if !err {
+		return nil, err
+	}
+	return convertComplexSliceToFloatSlice(eigenValues.Values(nil)), false
 }
 
 func (matrixHolder *MatrixHolder) GetInverse() ([][]float64, error) {
@@ -58,4 +63,12 @@ func convertDenseToFloat(data mat.Dense) [][]float64 {
 		convertedSlice = append(convertedSlice, tempSlice)
 	}
 	return convertedSlice
+}
+
+func convertComplexSliceToFloatSlice(data []complex128) [][]float64 {
+	floatSlice := [][]float64{}
+	for index := range data {
+		floatSlice = append(floatSlice, []float64{real(data[index]), imag(data[index])})
+	}
+	return floatSlice
 }

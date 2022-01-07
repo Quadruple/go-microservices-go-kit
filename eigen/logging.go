@@ -16,7 +16,7 @@ func NewLoggingService(logger log.Logger, eigenService EigenValueService) EigenV
 	return &loggingService{logger, eigenService}
 }
 
-func (logService *loggingService) GetEigenValues(matrixHolder *matrix.MatrixHolder) (_ []float64, err error) {
+func (logService *loggingService) GetEigenValues(matrixHolder *matrix.MatrixHolder) (_ [][]float64, err bool) {
 	defer func(begin time.Time) {
 		logService.logger.Log(
 			"Method:", "GetEigenValues",
