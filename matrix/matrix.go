@@ -11,8 +11,9 @@ type MatrixHolder struct {
 type MatrixOperations interface {
 	ConvertSliceToMatrix([][]float64) *MatrixHolder
 	CalculateDeterminant() float64
-	CalculateEigenValues() ([]complex128, error)
+	CalculateEigenValues() ([]complex128, string)
 	GetInverse() [][]float64
+	GetSingularValueDecomposition() ([][]float64, error)
 }
 
 func ConvertSliceToMatrix(data [][]float64) *MatrixHolder {
@@ -30,13 +31,13 @@ func (matrixHolder *MatrixHolder) CalculateDeterminant() float64 {
 	return mat.Det(matrixHolder.Matrix)
 }
 
-func (matrixHolder *MatrixHolder) CalculateEigenValues() ([][]float64, bool) {
+func (matrixHolder *MatrixHolder) CalculateEigenValues() ([][]float64, string) {
 	var eigenValues mat.Eigen
 	err := eigenValues.Factorize(matrixHolder.Matrix, mat.EigenNone)
 	if !err {
-		return nil, err
+		return nil, "An error occured."
 	}
-	return convertComplexSliceToFloatSlice(eigenValues.Values(nil)), false
+	return convertComplexSliceToFloatSlice(eigenValues.Values(nil)), "Successful."
 }
 
 func (matrixHolder *MatrixHolder) GetInverse() ([][]float64, error) {
@@ -46,6 +47,10 @@ func (matrixHolder *MatrixHolder) GetInverse() ([][]float64, error) {
 		return nil, err
 	}
 	return convertDenseToFloat(invertedMatrix), nil
+}
+
+func (matrixHolder *MatrixHolder) GetSingularValueDecomposition() ([][]float64, error) {
+	return [][]float64{{1, 2, 3}, {2, 3, 4}}, nil
 }
 
 func getDimensions(data [][]float64) (int, int) {

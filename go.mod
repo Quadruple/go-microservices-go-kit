@@ -1,15 +1,11 @@
 module go-microservices
 
-go 1.17
+go 1.16
+
+require github.com/go-kit/kit v0.12.0
 
 require (
-	github.com/go-kit/kit v0.12.0
-	github.com/gorilla/mux v1.8.0
-)
-
-require (
-	github.com/go-kit/log v0.2.0 // indirect
-	github.com/go-logfmt/logfmt v0.5.1 // indirect
-	gonum.org/v1/gonum v0.9.3 // indirect
-	gopkg.in/stack.v1 v1.7.0 // indirect
+	github.com/sony/gobreaker v0.4.1
+	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac
+	gonum.org/v1/gonum v0.9.3
 )

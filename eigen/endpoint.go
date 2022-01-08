@@ -13,16 +13,16 @@ type eigenValueRequest struct {
 
 type eigenValueResponse struct {
 	EigenValues [][]float64 `json:"eigens"`
-	Err         bool        `json:"err"`
+	Err         string      `json:"err"`
 }
 
 func MakeEigenValueEndpoint(eigenValueService EigenValueService) endpoint.Endpoint {
 	return func(_ context.Context, request interface{}) (interface{}, error) {
 		req := request.(eigenValueRequest)
 		v, err := eigenValueService.GetEigenValues(matrix.ConvertSliceToMatrix(req.Matrix))
-		if err {
+		if err != "Successful." {
 			return eigenValueResponse{v, err}, nil
 		}
-		return eigenValueResponse{v, false}, nil
+		return eigenValueResponse{v, err}, nil
 	}
 }
