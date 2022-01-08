@@ -70,7 +70,7 @@ func (mw proxymw) GetSingularValueDecomposition(matrix [][]float64) ([][]float64
 	if resp.Err != "" {
 		return resp.SvdMatrix, errors.New(resp.Err)
 	}
-	return resp.SvdMatrix, nil
+	return mw.next.GetSingularValueDecomposition(matrix)
 }
 
 func makeSvdProxy(ctx context.Context, instance string) endpoint.Endpoint {
