@@ -63,7 +63,7 @@ func main() {
 	http.Handle("/determinant", determinantHandler)
 	http.Handle("/eigen", eigenValueHandler)
 	http.Handle("/inverse", inverseHandler)
-	http.Handle("/svd", multiplicationHandler)
+	http.Handle("/multiplication", multiplicationHandler)
 	logger.Log("msg", "HTTP", "addr", ":8080")
 	logger.Log("err", http.ListenAndServe(":8080", nil))
 }
