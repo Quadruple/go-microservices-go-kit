@@ -5,7 +5,7 @@ import (
 	"go-microservices/determinant"
 	"go-microservices/eigen"
 	"go-microservices/inverse"
-	"go-microservices/svd"
+	"go-microservices/multiplication"
 	"net/http"
 	"os"
 
@@ -31,10 +31,10 @@ func main() {
 	inverseService = inverse.NewLoggingService(log.With(logger, "Component:", "Inverse Operation"), inverseService)
 
 	proxy := []string{"http://localhost:8080/inverse"}
-	var svdService svd.SvdService
-	svdService = svd.NewService()
-	svdService = svd.ProxyingMiddleware(context.Background(), proxy, logger)(svdService)
-	svdService = svd.NewLoggingService(log.With(logger, "Component:", "Singular Value Decomposition"), svdService)
+	var multiplicationService multiplication.MultiplicationService
+	multiplicationService = multiplication.NewService()
+	multiplicationService = multiplication.ProxyingMiddleware(context.Background(), proxy, logger)(multiplicationService)
+	multiplicationService = multiplication.NewLoggingService(log.With(logger, "Component:", "Singular Value Decomposition"), multiplicationService)
 
 	determinantHandler := httptransport.NewServer(
 		determinant.MakeUppercaseEndpoint(determinantService),
@@ -54,16 +54,16 @@ func main() {
 		inverse.EncodeInverseResponse,
 	)
 
-	svdHandler := httptransport.NewServer(
-		svd.MakeSvdEndpoint(svdService),
-		svd.DecodeSvdRequest,
-		svd.EncodeSvdResponse,
+	multiplicationHandler := httptransport.NewServer(
+		multiplication.MakeMultiplicationEndpoint(multiplicationService),
+		multiplication.DecodeMultiplicationRequest,
+		multiplication.EncodeMultiplicationResponse,
 	)
 
 	http.Handle("/determinant", determinantHandler)
 	http.Handle("/eigen", eigenValueHandler)
 	http.Handle("/inverse", inverseHandler)
-	http.Handle("/svd", svdHandler)
+	http.Handle("/svd", multiplicationHandler)
 	logger.Log("msg", "HTTP", "addr", ":8080")
 	logger.Log("err", http.ListenAndServe(":8080", nil))
 }

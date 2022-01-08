@@ -1,4 +1,4 @@
-package svd
+package multiplication
 
 import (
 	"time"
@@ -8,14 +8,14 @@ import (
 
 type loggingService struct {
 	logger log.Logger
-	SvdService
+	MultiplicationService
 }
 
-func NewLoggingService(logger log.Logger, svdService SvdService) SvdService {
+func NewLoggingService(logger log.Logger, svdService MultiplicationService) MultiplicationService {
 	return &loggingService{logger, svdService}
 }
 
-func (logService *loggingService) GetSingularValueDecomposition(matrixHolder [][]float64) (_ [][]float64, err error) {
+func (logService *loggingService) GetMultipliedMatrix(matrixHolder [][]float64) (_ [][]float64, err error) {
 	defer func(begin time.Time) {
 		logService.logger.Log(
 			"Method", "GetSingularValueDecomposition",
@@ -24,5 +24,5 @@ func (logService *loggingService) GetSingularValueDecomposition(matrixHolder [][
 			"Error", err,
 		)
 	}(time.Now())
-	return logService.SvdService.GetSingularValueDecomposition(matrixHolder)
+	return logService.MultiplicationService.GetMultipliedMatrix(matrixHolder)
 }

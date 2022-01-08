@@ -1,4 +1,4 @@
-package svd
+package multiplication
 
 import (
 	"context"
@@ -21,10 +21,10 @@ import (
 	httptransport "github.com/go-kit/kit/transport/http"
 )
 
-func ProxyingMiddleware(ctx context.Context, instances []string, logger log.Logger) SvdServiceMiddleware {
+func ProxyingMiddleware(ctx context.Context, instances []string, logger log.Logger) MultiplicationServiceMiddleware {
 	if len(instances) == 0 {
 		logger.Log("proxy_to", "none")
-		return func(next SvdService) SvdService { return next }
+		return func(next MultiplicationService) MultiplicationService { return next }
 	}
 
 	var (
@@ -49,28 +49,28 @@ func ProxyingMiddleware(ctx context.Context, instances []string, logger log.Logg
 	balancer := lb.NewRoundRobin(endpointer)
 	retry := lb.Retry(maxAttempts, maxTime, balancer)
 
-	return func(next SvdService) SvdService {
+	return func(next MultiplicationService) MultiplicationService {
 		return proxymw{ctx, next, retry}
 	}
 }
 
 type proxymw struct {
 	ctx  context.Context
-	next SvdService
+	next MultiplicationService
 	svd  endpoint.Endpoint
 }
 
-func (mw proxymw) GetSingularValueDecomposition(matrix [][]float64) ([][]float64, error) {
-	response, err := mw.svd(mw.ctx, svdRequest{Matrix: matrix})
+func (mw proxymw) GetMultipliedMatrix(matrix [][]float64) ([][]float64, error) {
+	response, err := mw.svd(mw.ctx, multiplicationRequest{Matrix: matrix})
 	if err != nil {
 		return nil, err
 	}
 
-	resp := response.(svdResponse)
+	resp := response.(multiplicationResponse)
 	if resp.Err != "" {
-		return resp.SvdMatrix, errors.New(resp.Err)
+		return resp.MultipliedMatrix, errors.New(resp.Err)
 	}
-	return mw.next.GetSingularValueDecomposition(matrix)
+	return mw.next.GetMultipliedMatrix(matrix)
 }
 
 func makeSvdProxy(ctx context.Context, instance string) endpoint.Endpoint {
@@ -88,7 +88,7 @@ func makeSvdProxy(ctx context.Context, instance string) endpoint.Endpoint {
 	return httptransport.NewClient(
 		"GET",
 		u,
-		EncodeSvdRequest,
-		DecodeSvdResponse,
+		EncodeMultiplicationRequest,
+		DecodeMultiplicationResponse,
 	).Endpoint()
 }
